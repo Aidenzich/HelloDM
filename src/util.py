@@ -1,4 +1,5 @@
 import pandas as pd
+import time
 
 def dtype_memory_usage(dataframe, dtype_list=['float','int','object']):
     for dtype in dtype_list:
@@ -36,3 +37,11 @@ def get_cat2id(pandas_series):
 def id2cat(cat_dict, idx):
     return list(cat_dict.keys())[list(cat_dict.values()).index(idx)]
 
+def timer(func):
+    def wrapper( *args , **kwargs ):
+        s = time.perf_counter()
+        v = func( *args , **kwargs )
+        e = time.perf_counter()
+        print(f"{func.__name__} takes {e-s} s.")
+        return v
+    return wrapper
