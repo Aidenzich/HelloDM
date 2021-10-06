@@ -23,5 +23,5 @@
     $$
 - Challenges and Weaknesses
   - Multiple scan of transaction database
-  - Huge number of candidates C_n
+  - Huge number of candidates $C_n$
   - *Tedious* workload of support counting for candidates

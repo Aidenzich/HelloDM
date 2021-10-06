@@ -1,5 +1,6 @@
 import pandas as pd
 import time
+import json
 
 def dtype_memory_usage(dataframe, dtype_list=['float','int','object']):
     for dtype in dtype_list:
@@ -45,3 +46,10 @@ def timer(func):
         print(f"{func.__name__} takes {e-s} s.")
         return v
     return wrapper
+
+def readjson2dict(filename):
+    filename = filename + ".json"
+    with open(filename) as jf:
+        json_dict = json.load(jf)
+    return json_dict
+
