@@ -1,6 +1,8 @@
 import pandas as pd
 import time
 import json
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def dtype_memory_usage(dataframe, dtype_list=['float','int','object']):
     for dtype in dtype_list:
@@ -52,4 +54,14 @@ def readjson2dict(filename):
     with open(filename) as jf:
         json_dict = json.load(jf)
     return json_dict
+
+def heatmap(dataframe):
+    """
+    This is an Axes-level function and will draw the heatmap into the currently-active Axes if none 
+    is provided to the ax argument. Part of this Axes space will be taken and used to plot a colormap,
+    unless cbar is False or a separate Axes is provided to cbar_ax.
+    """
+    corr = dataframe.corr()
+    sns.set(rc={'figure.figsize':{11.87, 11.27}})
+    sns.heatmap(data=corr, annot=True)
 
