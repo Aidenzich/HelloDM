@@ -3,6 +3,7 @@ import time
 import json
 import matplotlib.pyplot as plt
 import seaborn as sns
+from tqdm import tqdm
 
 def dtype_memory_usage(dataframe, dtype_list=['float','int','object']):
     for dtype in dtype_list:
@@ -54,6 +55,52 @@ def readjson2dict(filename):
     with open(filename) as jf:
         json_dict = json.load(jf)
     return json_dict
+
+def savedict2json(dict, filename):
+    filename = filename + ".json"
+    with open(filename, 'w') as jf:        
+        json.dump(dict, jf)
+    return filename
+
+def update2json(update, filename):
+    try:
+        with open(filename, 'r+') as jf:
+            o_dict = json.load(jf)
+    except:
+        o_dict = {}
+    o_dict[time.time()] = update
+    with open(filename, "w") as jf:
+        json.dump(o_dict, jf)
+
+def recall_evaluate(predict_dict, real_dict):
+    recall3_sum = 0
+    recall5_sum = 0
+    recall10_sum = 0
+    evaluatelen = len(real_dict)
+    for i in tqdm(real_dict):
+        real_list = real_dict[i]
+        if len(real_list)==0:
+            evaluatelen -=1
+            continue
+
+        try:
+            predict_list = predict_dict[i]
+        except:
+            predict_list = []
+        recall3 = len( list( set(predict_list[:3]) & set(real_list) )) / len(real_list)
+        recall5 = len( list( set(predict_list[:5]) & set(real_list) )) / len(real_list)
+        recall10 = len( list( set(predict_list[:10]) & set(real_list) )) / len(real_list)
+        recall3_sum += recall3
+        recall5_sum += recall5
+        recall10_sum += recall10
+    result = {
+        "recall@3": recall3_sum/evaluatelen,
+        "recall@5": recall5_sum/evaluatelen,
+        "recall@10": recall10_sum/evaluatelen,
+    }
+    return result
+
+
 
 def heatmap(dataframe):
     """
