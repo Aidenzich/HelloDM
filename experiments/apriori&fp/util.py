@@ -1,23 +1,21 @@
 import numpy as np
 import pandas as pd
+import time
 from itertools import combinations
 from itertools import chain, combinations
 from tqdm import tqdm
-def association_rules(df, metric="confidence", min_threshold=0.8):    
-    """
-    A lighter version of mlxtend/association_rules  
-    """
+
+def association_rules(df, min_support=0.1, min_conf = 0.0):
     metric_dict = {
-        "antecedent support": lambda _, sA, __: sA,
-        "consequent support": lambda _, __, sC: sC,
+        "from_support": lambda _, sA, __: sA,
+        "to_support": lambda _, __, sC: sC,
         "support": lambda sAC, _, __: sAC,
         "confidence": lambda sAC, sA, _: sAC/sA,
-        "lift": lambda sAC, sA, sC: metric_dict["confidence"](sAC, sA, sC)/sC,
-        }
+    }
 
-    columns_ordered = ["antecedent support", "consequent support",
+    columns_ordered = ["from_support", "to_support",
                        "support",
-                       "confidence", "lift",
+                       "confidence"
                        ]
 
     # get dict of {frequent itemset} -> support
@@ -27,8 +25,8 @@ def association_rules(df, metric="confidence", min_threshold=0.8):
     frequent_items_dict = dict(zip(frozenset_vect(keys), values))
 
     # prepare buckets to collect frequent rules
-    rule_antecedents = []
-    rule_consequents = []
+    rule_from = []
+    rule_to = []
     rule_supports = []
 
     # iterate over all frequent itemsets
@@ -41,25 +39,27 @@ def association_rules(df, metric="confidence", min_threshold=0.8):
                 antecedent = frozenset(c)
                 consequent = k.difference(antecedent)                
                 sA = frequent_items_dict[antecedent]
-                sC = frequent_items_dict[consequent]                
+                sC = frequent_items_dict[consequent]
 
-                score = metric_dict[metric](sAC, sA, sC)
-                if score >= min_threshold:
-                    rule_antecedents.append(antecedent)
-                    rule_consequents.append(consequent)
+                if (metric_dict["support"](sAC, sA, sC) >= min_support) and  (
+                    metric_dict["confidence"](sAC, sA, sC) >= min_conf):
+                    rule_from.append(antecedent)
+                    rule_to.append(consequent)
                     rule_supports.append([sAC, sA, sC])
+
+
 
     # check if frequent rule was generated
     if not rule_supports:
         return pd.DataFrame(
-            columns=["antecedents", "consequents"] + columns_ordered)
+            columns=["from", "to"] + columns_ordered)
 
     else:
         # generate metrics
         rule_supports = np.array(rule_supports).T.astype(float)
         df_res = pd.DataFrame(
-            data=list(zip(rule_antecedents, rule_consequents)),
-            columns=["antecedents", "consequents"])
+            data=list(zip(rule_from, rule_to)),
+            columns=["from", "to"])
         
         sAC = rule_supports[0]
         sA = rule_supports[1]
@@ -136,3 +136,33 @@ def init_min_sup(data, min_support:float):
     
     df.drop(df[df.support < min_support].index, inplace=True) # prune
     return df
+
+def transaction_to_df(transaction_df):
+    # transform transaction_df to onehot-like form
+    X = transaction_df.item.tolist()
+    unique_items = set()
+    for transaction in X:
+        for item in transaction:
+            unique_items.add(item)
+    columns_ = sorted(unique_items)
+    columns_mapping = {}
+    for col_idx, item in enumerate(columns_):
+        columns_mapping[item] = col_idx
+    columns_mapping_ = columns_mapping
+    array = np.zeros((len(X), len(columns_)), dtype=bool)
+    for row_idx, transaction in enumerate(X):
+        for item in transaction:
+            col_idx = columns_mapping_[item]
+            array[row_idx, col_idx] = True
+    df = pd.DataFrame(array)
+    df.columns = columns_
+    return df
+
+def timer(func):
+    def wrapper( *args , **kwargs ):
+        s = time.perf_counter()
+        v = func( *args , **kwargs )
+        e = time.perf_counter()
+        print(f"{func.__name__} takes {round((e-s)*1000)} ms.")
+        return v
+    return wrapper

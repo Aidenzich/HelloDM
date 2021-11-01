@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 import pandas as pd
 import collections
-
+from util import timer, transaction_to_df
 
 class FPTree(object):
     def __init__(self, rank=None):
@@ -127,37 +127,19 @@ def _setup_fptree(df, min_support):
 
     return tree, rank
 
-def transaction_to_df(transaction_df):
-    # transform transaction_df to onehot-like form
-    X = transaction_df.item.tolist()
-    unique_items = set()
-    for transaction in X:
-        for item in transaction:
-            unique_items.add(item)
-    columns_ = sorted(unique_items)
-    columns_mapping = {}
-    for col_idx, item in enumerate(columns_):
-        columns_mapping[item] = col_idx
-    columns_mapping_ = columns_mapping
-    array = np.zeros((len(X), len(columns_)), dtype=bool)
-    for row_idx, transaction in enumerate(X):
-        for item in transaction:
-            col_idx = columns_mapping_[item]
-            array[row_idx, col_idx] = True
-    df = pd.DataFrame(array)
-    df.columns = columns_
-    return df
 
-def fpgrowth(df, min_support=0.5, max_len=None):
-    df = transaction_to_df(df)
-    tree,  _ = _setup_fptree(df, min_support)
-    minsup = math.ceil(min_support * len(df.index))  # min support as count
+
+@timer
+def fpgrowth(data, min_support=0.5, max_len=None):
+    data = transaction_to_df(data)
+    tree,  _ = _setup_fptree(data, min_support)
+    minsup = math.ceil(min_support * len(data.index))  # min support as count
     generator = fpg_step(tree, minsup, max_len)
     itemsets = []
     supports = []
     for support, itemset in generator:
         itemsets.append(frozenset(itemset))
-        supports.append(support / len(df.index))
+        supports.append(support / len(data.index))
 
     res_df = pd.DataFrame({
         'itemsets': itemsets,
