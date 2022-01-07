@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 import pandas as pd
 import collections
-from util import timer, transaction_to_df
+from util import timer
 
 class FPTree(object):
     def __init__(self, rank=None):
@@ -130,16 +130,16 @@ def _setup_fptree(df, min_support):
 
 
 @timer
-def fpgrowth(data, min_support=0.5, max_len=None):
-    data = transaction_to_df(data)
-    tree,  _ = _setup_fptree(data, min_support)
-    minsup = math.ceil(min_support * len(data.index))  # min support as count
+def fpgrowth(df, min_support=0.5, max_len=None):
+    
+    tree,  _ = _setup_fptree(df, min_support)
+    minsup = math.ceil(min_support * len(df.index))  # min support as count
     generator = fpg_step(tree, minsup, max_len)
     itemsets = []
     supports = []
     for support, itemset in generator:
         itemsets.append(frozenset(itemset))
-        supports.append(support / len(data.index))
+        supports.append(support / len(df.index))
 
     res_df = pd.DataFrame({
         'itemsets': itemsets,

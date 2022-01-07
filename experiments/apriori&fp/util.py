@@ -130,7 +130,7 @@ def init_min_sup(data, min_support:float):
         c_item_set = c_item_set + list((set(new_elems) - set(c_item_set)))
     
     df = pd.DataFrame({
-        "itemsets": c_item_set,
+        "item": c_item_set,
         "support": count_item(origin_itemset_valcount, c_item_set, init=True)
     })
     

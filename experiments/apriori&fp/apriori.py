@@ -21,8 +21,7 @@ def apriori(df, min_support=0.5, use_colnames=False, max_len=None):
     def _support(_x, _n_rows):
         out = (np.sum(_x, axis=0) / _n_rows)
         return np.array(out).reshape(-1)
-
-    df = transaction_to_df(df)
+    
     if min_support <= 0.:
         raise ValueError('min_support is not positive ')
 
