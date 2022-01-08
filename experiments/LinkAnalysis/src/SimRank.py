@@ -90,8 +90,27 @@ def SimRank(graph, k, decay_factor):
                 
 
 if __name__ == "__main__":
+    import argparse
     import numpy as np
-    dataset = "graph_2.txt"
-    dataset_file_path = get_file_path(dataset, DATASET_PATH)
-    graph = read_dataset_graph(dataset_file_path)
-    print(f"{np.array(SimRank(graph, 100, 0.9)[0])}")
+
+    parser = argparse.ArgumentParser(description='HITS')
+    parser.add_argument('--dataset', type=str, required=False,
+        default='example', choices=['1', '2', '3', '4', '5', '6', 'example', 'all'],
+        help='name of dataset'
+    )
+    parser.add_argument('--itr', type=int, default=50, help='iterator times')
+    args = parser.parse_args()
+    
+    if args.dataset in  ['1', '2', '3', '4', '5', '6']:
+        datasets = DATASETS_FILE_NAME[(int(args.dataset) - 1):int(args.dataset)]
+    if args.dataset == 'all':
+        datasets = DATASETS_FILE_NAME
+    if args.dataset == 'example':
+        datasets = DATASETS_FILE_NAME[:3]
+
+    
+    for dataset in datasets:    
+        print(f"Dataset: [{dataset}]")
+        dataset_file_path = get_file_path(dataset, DATASET_PATH)
+        graph = read_dataset_graph(dataset_file_path)
+        print(f"\033[93m{np.array(SimRank(graph, 100, 0.9)[0])}\033[0m")

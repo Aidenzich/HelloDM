@@ -22,22 +22,34 @@ The Directory Structure is shown as follows.
 │   └── temp...
 └── README.md
 ```
-### Environment    
-`python 3.8`
+### Environment
+`python 3.8`, `numpy`
 ### Run Implementation code
 #### HITS
-```sh=
-python src/HITS.py
-```
+- Bash Script
+    ```sh=
+    $ python src/HITS.py
+    $ python src/HITS.py --dataset 1
+    $ python src/HITS.py --itr 50
+    ```
+    - `--dataset` Use to point at specific dataset
+    - `--itr` Set number of iterations
+- Standard output
+    ![stdout_HITS](./img/stdout_HITS.png)
 #### PageRank
-```sh=
-python src/PageRank.py
-```
+- Bash Script
+    ```sh=
+    $ python src/PageRank.py
+    ```
+- Standard output
+    ![stdout_PageRank](./img/stdout_PageRank.png)
 #### SimRank
-```sh=
-python src/SimRank.py
-```
-
+- Bash Script
+    ```sh=
+    $ python src/SimRank.py
+    ```
+- Standard output
+    ![stdout_SimRank](./img/stdout_SimRank.png)
 ## Result analysis and discussion
 ## Computation performance analysis
 ## Discussion (what you learned from this project and your comments about this project

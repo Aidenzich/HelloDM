@@ -46,26 +46,34 @@ def get_result(graph):
 
 
 if __name__ == "__main__":
-    import pandas as pd
-    for dataset in DATASETS_FILE_NAME[:3]:
-        print(f"==================== {dataset} ====================")
+    import argparse
+    import numpy as np
+
+    parser = argparse.ArgumentParser(description='HITS')
+    parser.add_argument('--dataset', type=str, required=False,
+        default='example', choices=['1', '2', '3', '4', '5', '6', 'example', 'all'],
+        help='name of dataset'
+    )
+    parser.add_argument('--itr', type=int, default=100, help='iterator times')
+    args = parser.parse_args()
+    
+    if args.dataset in  ['1', '2', '3', '4', '5', '6']:
+        datasets = DATASETS_FILE_NAME[(int(args.dataset) - 1):int(args.dataset)]
+    if args.dataset == 'all':
+        datasets = DATASETS_FILE_NAME
+    if args.dataset == 'example':
+        datasets = DATASETS_FILE_NAME[:3]
+    
+    for dataset in datasets:
+        print(f"Dataset:  [{dataset}]")
         dataset_file_path = get_file_path(dataset, DATASET_PATH)
         graph = read_dataset_graph(dataset_file_path)
-        HubsAndAuthorities(graph, 50)    
+        HubsAndAuthorities(graph, args.itr)
         hub, auth = get_result(graph)
-        df_dict = {
-            "point":[],
-            "Auth":[],
-            "Hub":[]
-        }
-        for k in hub.keys():
-            df_dict['point'].append(k)
-            df_dict['Auth'].append(auth[k])
-            df_dict['Hub'].append(hub[k])
-
-        df = pd.DataFrame(df_dict)
-        print(df)
-        print()
-
-
-# %%
+        
+        print("\033[93m", end="")
+        print("Authority:")
+        print(np.round(np.array(list(auth.values())), 5))
+        print("Hub:")
+        print(np.round(np.array(list(hub.values())), 5))
+        print("\033[0m")

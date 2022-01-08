@@ -38,17 +38,32 @@ def get_result(graph):
 
     
 if __name__ == "__main__":
+    import argparse
     import numpy as np
-    for dataset in DATASETS_FILE_NAME[:3]:
-        print(f"[{dataset}]")
+
+    parser = argparse.ArgumentParser(description='PageRank')
+    parser.add_argument('--dataset', type=str, required=False,
+        default='example', choices=['1', '2', '3', '4', '5', '6', 'example', 'all'],
+        help='name of dataset'
+    )
+    parser.add_argument('--itr', type=int, default=100, help='iterator times')
+    parser.add_argument('--damping_factor', type=float, default=0.15, help='dumping factor')
+    args = parser.parse_args()
+    
+    if args.dataset in  ['1', '2', '3', '4', '5', '6']:
+        datasets = DATASETS_FILE_NAME[(int(args.dataset) - 1):int(args.dataset)]
+    if args.dataset == 'all':
+        datasets = DATASETS_FILE_NAME
+    if args.dataset == 'example':
+        datasets = DATASETS_FILE_NAME[:3]
+
+
+    for dataset in datasets:
+        print(f"Dataset: [{dataset}]")
         dataset_file_path = get_file_path(dataset, DATASET_PATH)
         graph = read_dataset_graph(dataset_file_path)
-        PageRank(graph, 100, 0.15)
+        PageRank(graph, args.itr, args.damping_factor)
         result = get_result(graph)
-
-        
-                    
-        
         print(f"\033[93m{np.array(list(result.values()))}\033[0m")
         print()
     
