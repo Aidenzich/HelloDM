@@ -1,4 +1,3 @@
-from os import pread
 from graph import *
 def PageRank(graph, k, damping_factor):    
     for _ in range(k):
