@@ -2,24 +2,6 @@ from path import *
 from graph import *
 
 def initialize_similarity_rank(graph):    
-    """[summary]
-    Args:
-        graph ([type]): [description]
-
-    Returns:
-        list: similarity_matrix
-        [
-            [1, 0, 0, 0, 0], 
-            [0, 1, 0, 0, 0], 
-            [0, 0, 1, 0, 0], 
-            [0, 0, 0, 1, 0], 
-            [0, 0, 0, 0, 1]
-        ],
-        list: node_vertexs_indices
-        [
-            1, 2, 3, 4
-        ]
-    """
     init_similarity_matrix = []
     
     node_vertexs_indices = []
@@ -28,14 +10,11 @@ def initialize_similarity_rank(graph):
             continue    
         node_vertexs_indices.append(node.vertex)
     
-    
     for pair_node1 in graph.nodes:
         array1d = []
         for pair_node2 in graph.nodes:
-            if (pair_node1 == pair_node2):
-                array1d.append(1)
-            else:
-                array1d.append(0)
+            array1d.append(1 if pair_node1 == pair_node2 else 0)
+            
         init_similarity_matrix.append(array1d)
     
     return init_similarity_matrix, node_vertexs_indices
@@ -90,27 +69,19 @@ def SimRank(graph, k, decay_factor):
                 
 
 if __name__ == "__main__":
-    import argparse
+    from utils import init_argparse
     import numpy as np
 
-    parser = argparse.ArgumentParser(description='HITS')
-    parser.add_argument('--dataset', type=str, required=False,
-        default='example', choices=['1', '2', '3', '4', '5', '6', 'example', 'all'],
-        help='name of dataset'
-    )
-    parser.add_argument('--itr', type=int, default=50, help='iterator times')
-    args = parser.parse_args()
-    
-    if args.dataset in  ['1', '2', '3', '4', '5', '6']:
-        datasets = DATASETS_FILE_NAME[(int(args.dataset) - 1):int(args.dataset)]
-    if args.dataset == 'all':
-        datasets = DATASETS_FILE_NAME
-    if args.dataset == 'example':
-        datasets = DATASETS_FILE_NAME[:3]
+    args = init_argparse("SimRank")
 
     
-    for dataset in datasets:    
+    for dataset in args.datasets:
         print(f"Dataset: [{dataset}]")
-        dataset_file_path = get_file_path(dataset, DATASET_PATH)
-        graph = read_dataset_graph(dataset_file_path)
-        print(f"\033[93m{np.array(SimRank(graph, 100, 0.9)[0])}\033[0m")
+        dataset_file_path = get_file_path(dataset, DATASET_PATH)        
+
+        graph = read_dataset_graph(dataset_file_path, 
+            add_edges=args.add_edges, 
+            ignore_edges=args.ignore_edges
+        )
+
+        print(f"\033[93m{np.array(SimRank(graph, args.itr, args.decay_factor)[0])}\033[0m")

@@ -3,24 +3,27 @@ from graph import *
 
 def HubsAndAuthorities(graph, k):    
     for _ in range(k):
-        # auth
+        # Calculate auth
         for node in graph.nodes:
             if node == None:
                 continue            
             node.auth = 0
-            for child_key in node.parents_nodes_key:            
-                node.auth += graph.nodes[child_key].hub
-            # print(f"Auth {node.vertex}'s hub:{node.hub}, auth:{node.auth}")
-        # hub
+            
+            # The sum of the hub of its parents nodes.
+            for p_key in node.parents_nodes_key:
+                node.auth += graph.nodes[p_key].hub
+            
+        # Calculate hub
         for node in graph.nodes:
             if node == None:
                 continue
             
             node.hub = 0
             
-            for parent_key in node.children_nodes_key:            
-                node.hub += graph.nodes[parent_key].auth            
-            # print(f"Hub {node.vertex}'s hub:{node.hub}, auth:{node.auth}")
+            # The sum of the authority of its children nodes.
+            for c_key in node.children_nodes_key:            
+                node.hub += graph.nodes[c_key].auth            
+            
 
 def get_result(graph):
     hub_result = {}
@@ -45,29 +48,21 @@ def get_result(graph):
 
 
 
-if __name__ == "__main__":
-    import argparse
+if __name__ == "__main__":    
     import numpy as np
-
-    parser = argparse.ArgumentParser(description='HITS')
-    parser.add_argument('--dataset', type=str, required=False,
-        default='example', choices=['1', '2', '3', '4', '5', '6', 'example', 'all'],
-        help='name of dataset'
-    )
-    parser.add_argument('--itr', type=int, default=100, help='iterator times')
-    args = parser.parse_args()
+    from utils import init_argparse
     
-    if args.dataset in  ['1', '2', '3', '4', '5', '6']:
-        datasets = DATASETS_FILE_NAME[(int(args.dataset) - 1):int(args.dataset)]
-    if args.dataset == 'all':
-        datasets = DATASETS_FILE_NAME
-    if args.dataset == 'example':
-        datasets = DATASETS_FILE_NAME[:3]
+    args = init_argparse("HITS")
     
-    for dataset in datasets:
+    for dataset in args.datasets:
         print(f"Dataset:  [{dataset}]")
         dataset_file_path = get_file_path(dataset, DATASET_PATH)
-        graph = read_dataset_graph(dataset_file_path)
+        
+        graph = read_dataset_graph(dataset_file_path, 
+            add_edges=args.add_edges, 
+            ignore_edges=args.ignore_edges
+        )
+
         HubsAndAuthorities(graph, args.itr)
         hub, auth = get_result(graph)
         

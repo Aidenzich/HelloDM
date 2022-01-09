@@ -40,7 +40,7 @@ class Graph:
             print(f"\n(hub:{v_node.hub}, auth:{v_node.auth})")
             print("\n")
 
-def read_dataset_graph(filename):        
+def read_dataset_graph(filename: str, add_edges=[], ignore_edges=[]):        
     with open(filename) as f:
         rows = f.readlines()
     total_nodes = []
@@ -49,14 +49,28 @@ def read_dataset_graph(filename):
         # strip = Remove spaces at the beginning and at the end of the string
         r = r.strip().split(',')
         r = [int(i) for i in r ]
+
         edges.append(r)
-        total_nodes += r        
-    total_nodes = list(set(total_nodes))
-    
+        total_nodes += r
+
+    total_nodes = list(set(total_nodes))    
     graph = Graph(len(total_nodes)+1)
+
     for e in edges:        
+        if e in ignore_edges:
+            print("\033[31m", end='')
+            print(f"Ignore edge {e}")
+            print("\033[0m", end='')
+            continue
         graph.add_edge(e[0], e[1])
     
+    for new_edge in add_edges:
+        print("\033[31m", end='')
+        print(f"Add new edge [{new_edge[0]}, {new_edge[1]}]")
+        print("\033[0m", end='')
+        graph.add_edge(new_edge[0], new_edge[1])
+
+
     return graph
 
 if __name__ == "__main__":
