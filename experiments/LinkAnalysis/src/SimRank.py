@@ -1,5 +1,6 @@
 from path import *
 from graph import *
+from utils import timer
 
 def initialize_similarity_rank(graph):    
     init_similarity_matrix = []    
@@ -43,7 +44,7 @@ def calculate_similarity_rank_sum(graph, pair_node1, pair_node2,
     scale = decay_factor / (len(pair_node1.parents_nodes_key) * len(pair_node2.parents_nodes_key))
     return sim_rank_sum * scale
 
-
+@timer
 def SimRank(graph, k, decay_factor):    
     init_similarity_matrix, node_vertexs_indices = initialize_similarity_rank(graph)
     similarity_matrix = [[0] * len(node_vertexs_indices) for _ in range(len(node_vertexs_indices))]

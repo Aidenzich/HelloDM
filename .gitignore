@@ -118,4 +118,5 @@ dmypy.json
 
 # Data
 data/
-experiments/HW3/dataset
+experiments/LinkAnalysis/dataset
+experiments/exports/*

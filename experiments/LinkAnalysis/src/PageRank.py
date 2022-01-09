@@ -1,8 +1,11 @@
 from path import *
 from graph import *
+from utils import timer
+from tqdm import tqdm
 
+@timer
 def PageRank(graph, k, damping_factor):    
-    for _ in range(k):        
+    for _ in range(k):
         for node in graph.nodes:
             if node == None:
                 continue            
@@ -15,18 +18,19 @@ def PageRank(graph, k, damping_factor):
 
             random_jumping = damping_factor / len(graph.nodes)
             node.page_rank = random_jumping + (1 - damping_factor) * page_rank_sum
-
+    
 
 
 def get_result(graph):
     page_rank_result = {}        
     total_pagerank_sum = 0
     
-    for node in graph.nodes:
+    for node in graph.nodes:            
         if node == None:
             continue        
-        total_pagerank_sum += node.page_rank
-        
+           
+        total_pagerank_sum += node.page_rank    
+    
     for node in graph.nodes:
         if node == None:
             continue

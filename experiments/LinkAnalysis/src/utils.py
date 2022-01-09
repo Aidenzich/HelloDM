@@ -1,6 +1,8 @@
 from path import *
 import argparse
 import numpy as np 
+import time
+
 def init_argparse(algorithm_name: str):
     parser = argparse.ArgumentParser(description=algorithm_name)
     parser.add_argument('--dataset', type=str, required=False,
@@ -55,3 +57,13 @@ def export_score_txt(numpy_array: np.array, graph_name: str, score_name: str):
         np.savetxt(export_path, numpy_array, fmt='%1.5f', delimiter=" ", newline="\n")
     else:
         np.savetxt(export_path, numpy_array, fmt='%1.5f', delimiter=" ", newline=" ")
+
+def timer(func):
+    def wrapper( *args , **kwargs ):
+        s = time.perf_counter()
+        v = func( *args , **kwargs )
+        e = time.perf_counter()
+        print(f"\033[95m{func.__name__} took {round(e-s, 7)} s.\033[0m")
+        return v
+    return wrapper
+

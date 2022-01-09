@@ -1,7 +1,8 @@
 from path import *
 from graph import *
+from utils import timer
 
-
+@timer
 def HubsAndAuthorities(graph, k):    
     for _ in range(k):
         # Calculate auth
