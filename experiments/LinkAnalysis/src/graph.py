@@ -47,6 +47,7 @@ def read_dataset_graph(filename: str, add_edges=[], ignore_edges=[]):
     edges = []
     for r in rows:
         # strip = Remove spaces at the beginning and at the end of the string
+        
         r = r.strip().split(',')
         r = [int(i) for i in r ]
 
@@ -54,7 +55,7 @@ def read_dataset_graph(filename: str, add_edges=[], ignore_edges=[]):
         total_nodes += r
 
     total_nodes = list(set(total_nodes))    
-    graph = Graph(len(total_nodes)+1)
+    graph = Graph(max(total_nodes) + 1)
 
     for e in edges:        
         if e in ignore_edges:
@@ -62,6 +63,7 @@ def read_dataset_graph(filename: str, add_edges=[], ignore_edges=[]):
             print(f"Ignore edge {e}")
             print("\033[0m", end='')
             continue
+        
         graph.add_edge(e[0], e[1])
     
     for new_edge in add_edges:

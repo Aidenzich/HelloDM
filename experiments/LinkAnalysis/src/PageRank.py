@@ -36,8 +36,8 @@ def get_result(graph):
     return page_rank_result
 
     
-if __name__ == "__main__":
-    from utils import init_argparse
+if __name__ == "__main__":    
+    from utils import init_argparse, export_score_txt
     import numpy as np
     args = init_argparse("PageRank")
     
@@ -52,6 +52,10 @@ if __name__ == "__main__":
 
         PageRank(graph, args.itr, args.damping_factor)
         result = get_result(graph)
-        print(f"\033[93m{np.array(list(result.values()))}\033[0m")
+        result = np.array(list(result.values()))
+        print(f"\033[93m{result}\033[0m")
         print()
-    
+        if args.save == 1:
+            from utils import export_score_txt
+            export_score_txt(result, dataset, 'PageRank')
+        

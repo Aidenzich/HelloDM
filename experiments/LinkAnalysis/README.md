@@ -33,6 +33,9 @@ The Directory Structure is shown as follows.
     $ python3 src/HITS.py --itr 50
     ```
     - `--dataset` Use to point at specific dataset.
+        - Available Datasets:
+          - `1`, `2`, `3`, `4`, `5`, `6` 
+          - default is `example` which contain graph_1.txt ~ graph_3.txt
     - `--itr` Set number of iterations.
     - `--add_edges` Add new edges to the graph
         - e.g. 
@@ -295,7 +298,10 @@ The Directory Structure is shown as follows.
     ```
 ### Result analysis and discussion 
     [10 pt]
-#### 說明每個圖 (Graph 1~3) 的結果並討論
+- 說明每個圖 (Graph 1~3) 的結果並討論
+    - Graph 1
+    - Graph 2
+    - Graph 3
 #### 針對不同 damping factor 或 decay factor 討論
 #### General analysis
 ### Effectiveness analysis 

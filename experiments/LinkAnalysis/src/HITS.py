@@ -1,6 +1,7 @@
 from path import *
 from graph import *
 
+
 def HubsAndAuthorities(graph, k):    
     for _ in range(k):
         # Calculate auth
@@ -50,7 +51,7 @@ def get_result(graph):
 
 if __name__ == "__main__":    
     import numpy as np
-    from utils import init_argparse
+    from utils import init_argparse, export_score_txt
     
     args = init_argparse("HITS")
     
@@ -65,10 +66,16 @@ if __name__ == "__main__":
 
         HubsAndAuthorities(graph, args.itr)
         hub, auth = get_result(graph)
-        
+        auth = np.round(np.array(list(auth.values())), 8) 
+        hub = np.round(np.array(list(hub.values())), 8)
         print("\033[93m", end="")
         print("Authority:")
-        print(np.round(np.array(list(auth.values())), 5))
+        print(auth)
         print("Hub:")
-        print(np.round(np.array(list(hub.values())), 5))
+        print(hub)
         print("\033[0m")
+
+        if args.save == 1:
+            from utils import export_score_txt
+            export_score_txt(auth, dataset, 'Authority')
+            export_score_txt(hub, dataset, 'Hub')
